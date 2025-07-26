@@ -1,0 +1,11 @@
+path: data
+train: train\images
+val: validation\images
+
+nc: 4
+
+names: ["blue block", "green block", "red block", "yellow block"]
+
+
+
+
