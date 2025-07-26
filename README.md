@@ -207,6 +207,7 @@ python train/train.py
 - 指定训练好的YOLO模型文件路径
 - 支持相对路径和绝对路径
 - 示例：`--model results/detect_n/train/weights/best.pt`
+- Jetson具有TensorRT模块，转化为FP16的Engine格式可以加速
 
 **`--source` (输入源配置)**
 输入源类型自动识别机制：
