@@ -532,10 +532,10 @@ def main():
     parser.add_argument('--jetson', '-j', action='store_true',
                        help='使用Jetson CSI摄像头')
     
-    parser.add_argument('--cam_width', '-w', type=int, default=1280,
+    parser.add_argument('--cam_width', '-W', type=int, default=1280,
                        help='CSI摄像头宽度 (默认: 3264)')
     
-    parser.add_argument('--cam_height', '-h', type=int, default=720,
+    parser.add_argument('--cam_height', '-H', type=int, default=720,
                        help='CSI摄像头高度 (默认: 2464)')
     
     parser.add_argument('--cam_fps', '-fps', type=int, default=30,
