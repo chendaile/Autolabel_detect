@@ -1,48 +1,80 @@
-# colorBlock_detect
+# 🎯 ColorBlock Detect
 
-本项目基于YOLO目标检测算法，实现了色块检测功能，适用于视频或图片中的色块识别与定位。
+<div align="center">
 
-## 目录结构
+![Python Version](https### 3. 模型推理/检测
+
+```bash
+python yolo_detect.py --model results/detect_n/train/weights/best.pt --source test/test.mp4
+```
+
+## 📚 详细文档elds.io/badge/python-3.7%2B-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-supported-red)
+![OpenCV](https://img.shields.io/badge/OpenCV-required-green)
+![Ultralytics](https://img.shields.io/badge/Ultralytics-YOLO-yellow)
+
+</div>
+
+本项目基于 YOLO 目标检测算法，实现了色块检测功能，适用于视频或图片中的色块识别与定位。
+
+## 📑 目录
+
+- [特性](#-特性)
+- [环境要求](#-环境要求)
+- [快速开始](#-快速开始)
+- [详细文档](#-详细文档)
+- [参考资料](#-参考资料)
+- [联系方式](#-联系方式)
+
+## ✨ 特性
+
+- 🎯 支持图片、视频、摄像头等多种输入源
+- 🚀 实时检测，高性能推理
+- 📊 完整的训练和评估流程
+- 💾 支持检测结果保存
+- 🎥 支持摄像头实时录制
+- 🖥️ Jetson 平台支持
+
+## 📁 项目结构
 
 ```
 yolo_detect.py                # 主检测脚本
+train/
+    train.py                 # 训练脚本
+    train_val_split.py      # 数据集划分脚本
 results/
     detect_n/
-        train/
-            args.yaml         # 训练参数配置
-            BoxF1_curve.png  # F1曲线
-            BoxP_curve.png   # 精确率曲线
-            BoxPR_curve.png  # 精确率-召回率曲线
-            BoxR_curve.png   # 召回率曲线
-            confusion_matrix_normalized.png # 归一化混淆矩阵
-            confusion_matrix.png            # 混淆矩阵
-            labels.jpg       # 标签分布
-            results.csv      # 训练结果数据
-            results.png      # 训练结果可视化
-            train_batch*.jpg # 训练批次样本
-            val_batch*_labels.jpg # 验证集标签
-            val_batch*_pred.jpg   # 验证集预测
-            weights/
-                best.engine  # 最优TensorRT模型
-                best.onnx    # 最优ONNX模型
-                best.pt      # 最优PyTorch模型
-                last.pt      # 最后一次训练模型
-
+        train/              # 训练输出目录
+            weights/        # 模型权重
+                best.pt     # 最优模型
+                last.pt     # 最新模型
+            *.png          # 训练过程可视化图表
 test/
-    test.mp4                 # 测试视频
+    test.mp4               # 测试视频
 ```
 
-## 环境依赖
+## 📦 环境要求
+
 - Python 3.7+
 - PyTorch
 - OpenCV
-- 其它依赖请参考`requirements.txt`或根据实际报错安装
+- Ultralytics
+- 其它依赖请参考 `requirements.txt` 或根据实际报错安装
 
-## 快速开始
+## 🚀 快速开始
 
-1. **模型训练**
-   - 请根据实际需求准备数据集，并配置YOLO训练参数。
-   - 训练完成后，模型权重保存在`results/detect_n/train/weights/`目录下。
+### 1. 数据集准备与划分
+
+```bash
+# 将数据集按8:2的比例划分为训练集和验证集
+python train/train_val_split.py --datapath ./dataset --train_pct 0.8
+```
+
+### 2. 模型训练
+
+```bash
+python train/train.py
+```
 
 
 2. **模型推理/检测**
@@ -56,15 +88,12 @@ test/
 
 ## yolo_detect.py 使用手册
 
-`yolo_detect.py` 是本项目的通用推理脚本，支持图片、视频、摄像头等多种输入源，支持检测结果保存、帧率显示、摄像头录制等功能。
+### yolo_detect.py 使用说明
 
-### 基本用法
+通用推理脚本，支持多种输入源。
 
-```bash
-python yolo_detect.py --model <模型权重路径> [其它参数]
-```
-
-### 常用参数说明
+<details>
+<summary>📝 常用参数</summary>
 
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
@@ -98,42 +127,120 @@ python yolo_detect.py --model <模型权重路径> [其它参数]
    python yolo_detect.py --model results/detect_n/train/weights/best.pt --source path/to/image.jpg --save
    ```
 
-3. **检测视频并保存结果视频**
-   ```bash
-   python yolo_detect.py --model results/detect_n/train/weights/best.pt --source path/to/video.mp4 --save
-   ```
+---
 
-4. **设置检测阈值和输出尺寸**
-   ```bash
-   python yolo_detect.py --model results/detect_n/train/weights/best.pt --source 0 --conf 0.5 --imgsz 800
-   ```
+## train_val_split.py 使用手册
 
-5. **不翻转画面**
-   ```bash
-   python yolo_detect.py --model results/detect_n/train/weights/best.pt --source 0 --flip 2
-   ```
+`train/train_val_split.py` 用于将数据集随机划分为训练集和验证集。该脚本会自动创建所需的目录结构，并随机复制图片及其对应的标注文件到相应目录。
 
-6. **Jetson平台CSI摄像头检测**
-   ```bash
-   python yolo_detect.py --model results/detect_n/train/weights/best.pt --jetson
-   ```
+### 基本用法
 
-### 运行时快捷键
-- `q`：退出检测
-- `s`：保存当前帧（需加 --save）
-- `r`：摄像头模式下开始/停止录制（需加 --save）
+```bash
+python train/train_val_split.py --datapath <数据集路径> --train_pct <训练集比例>
+```
 
-### 检测结果
-- 检测结果图片/视频/帧保存于 `--output` 指定目录。
-- 检测窗口会实时显示检测框、类别、置信度、帧率等信息。
+### 参数说明
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| --datapath | 数据集根目录，需包含 images/ 和 labels/ 子文件夹（必填） | - |
+| --train_pct | 训练集占比（0.01-0.99之间的浮点数） | 0.8 |
+
+### 目录结构要求
+
+输入数据集目录结构：
+```
+<datapath>/
+    images/     # 存放所有图片
+    labels/     # 存放所有标注文件
+```
+
+输出目录结构：
+```
+data/
+    train/
+        images/     # 训练集图片
+        labels/     # 训练集标注
+    validation/
+        images/     # 验证集图片
+        labels/     # 验证集标注
+```
+
+### 使用示例
+
+```bash
+# 将数据集按8:2的比例划分为训练集和验证集
+python train/train_val_split.py --datapath ./dataset --train_pct 0.8
+```
 
 ---
 
-3. **结果查看**
-   - 检测结果及训练过程可视化文件保存在`results/`目录下。
+## train.py 使用手册
 
-## 参考
-- [YOLO官方文档](https://github.com/ultralytics/yolov5)
+`train/train.py` 基于 Ultralytics YOLO 框架进行模型训练。该脚本会加载预训练模型，并在自定义数据集上进行训练。
 
-## 联系方式
-如有问题欢迎提issue或联系作者。
+### 基本配置
+
+目前脚本使用了以下默认配置：
+- 预训练模型：`premodel/yolo11n.pt`
+- 数据集配置：`data.yaml`
+- 批次大小：0.9（自动计算）
+- 缓存：启用
+- 训练时间：0.2（自动计算）
+- 输出目录：`results/detect_n`
+
+### 使用方法
+
+1. 确保已准备好：
+   - 预训练模型放置在 `premodel/` 目录下
+   - 数据集配置文件 `data.yaml`
+   - 已完成数据集划分
+
+2. 运行训练：
+```bash
+python train/train.py
+```
+
+3. 训练过程将自动：
+   - 加载预训练模型
+   - 根据 data.yaml 配置加载数据集
+   - 在 `results/detect_n` 目录下保存训练日志和结果
+   - 在 `results/detect_n/train/weights/` 下保存模型权重
+
+### 典型用例
+
+```bash
+# 1. 摄像头实时检测
+python yolo_detect.py --model results/detect_n/train/weights/best.pt --source 0
+
+# 2. 检测图片并保存
+python yolo_detect.py --model results/detect_n/train/weights/best.pt --source path/to/image.jpg --save
+
+# 3. 检测视频
+python yolo_detect.py --model results/detect_n/train/weights/best.pt --source path/to/video.mp4 --save
+
+# 4. Jetson CSI摄像头
+python yolo_detect.py --model results/detect_n/train/weights/best.pt --jetson
+```
+
+<details>
+<summary>⌨️ 快捷键</summary>
+
+- `q`：退出检测
+- `s`：保存当前帧（需加 --save）
+- `r`：开始/停止录制（需加 --save）
+
+</details>
+
+## 📚 参考资料
+
+- [YOLO 官方文档](https://github.com/ultralytics/yolov5)
+- [Ultralytics 文档](https://docs.ultralytics.com/)
+
+## 📮 联系方式
+
+如有问题欢迎提 [Issue](https://github.com/chendaile/ColorBlock_detect/issues) 或通过以下方式联系作者：
+
+<div align="center">
+⭐️ 如果这个项目对你有帮助，欢迎 Star！
+</div>
