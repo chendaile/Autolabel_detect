@@ -7,7 +7,10 @@ from ultralytics import YOLO
 import numpy as np
 
 class YOLODetector:
-    def __init__(self, model_path, duty='detect', source=0, imgsz=640, flip_mode=1, conf_threshold=0.3, save_output=False, output_dir='./test_result'):
+    def __init__(self, model_path, duty='detect', source=0, imgsz=640,
+                flip_mode=1, conf_threshold=0.3, save_output=False,
+                output_dir='./test_result', jetson=False, cam_width = 1280,
+                cam_height=720, cam_fps=30):
         """
         初始化YOLO检测器
         
@@ -29,6 +32,10 @@ class YOLODetector:
         self.conf_threshold = conf_threshold
         self.save_output = save_output
         self.output_dir = output_dir
+        self.jetson = jetson
+        self.cam_width = cam_width
+        self.cam_height = cam_height
+        self.cam_fps = cam_fps
         
         # 加载模型
         try:
@@ -85,14 +92,8 @@ class YOLODetector:
                 new_w = self.imgsz
                 new_h = int(h * self.imgsz / w)
             
-            # 确保尺寸至少为1
-            new_w = max(1, new_w)
-            new_h = max(1, new_h)
-            
         else:  # tuple (width, height)
             new_w, new_h = self.imgsz
-            new_w = max(1, new_w)
-            new_h = max(1, new_h)
         
         try:
             return cv2.resize(frame, (new_w, new_h))
@@ -338,17 +339,31 @@ class YOLODetector:
     
     def detect_camera(self):
         """处理摄像头输入"""
-        print(f"打开摄像头: {self.source}")
+        if self.jetson:
+            print(f"打开jetson摄像头: {self.source}")
+        else:
+            print(f"打开普通USB摄像头: {self.source}")
         
         # 打开摄像头
-        cap = cv2.VideoCapture(int(self.source) if isinstance(self.source, str) and self.source.isdigit() else self.source)
+        if not self.jetson:
+            cap = cv2.VideoCapture(int(self.source) if isinstance(self.source, str) and self.source.isdigit() else self.source)
+            # 设置摄像头分辨率
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.cam_width)
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.cam_height)
+        else:
+            pipeline = (
+                "nvarguscamerasrc ! "
+                f"video/x-raw(memory:NVMM), width={self.cam_width}, height={self.cam_height}, format=NV12, framerate={self.cam_fps}/1 ! "
+                "nvvidconv ! "
+                "video/x-raw, format=BGRx ! "
+                "videoconvert ! "
+                "appsink"
+            )
+            cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
+
         if not cap.isOpened():
             print(f"无法打开摄像头: {self.source}")
             return
-        
-        # 设置摄像头分辨率
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         
         print("摄像头已就绪，按 'q' 退出，按 's' 保存当前帧，按 'r' 开始/停止录制")
         
@@ -496,7 +511,7 @@ def main():
     
     parser.add_argument('--duty', '-d', type=str, default='detect',
                        choices=['detect', 'segment', 'classify', 'pose'],
-                       help='任务类型 (默认: detect)')
+                       help='任务类型 (默认: detect)(暂时detect这一个任务可用)')
     
     parser.add_argument('--imgsz', '-i', type=int, default=640,
                        help='输出图像尺寸 (默认: 640)')
@@ -514,6 +529,18 @@ def main():
     parser.add_argument('--output', '-o', type=str, default='./test_result',
                        help='输出目录 (默认: ./test_result)')
     
+    parser.add_argument('--jetson', '-j', action='store_true',
+                       help='使用Jetson CSI摄像头')
+    
+    parser.add_argument('--cam_width', '-w', type=int, default=1280,
+                       help='CSI摄像头宽度 (默认: 3264)')
+    
+    parser.add_argument('--cam_height', '-h', type=int, default=720,
+                       help='CSI摄像头高度 (默认: 2464)')
+    
+    parser.add_argument('--cam_fps', '-fps', type=int, default=30,
+                       help='CSI摄像头帧率 (默认: 21)')
+    
     args = parser.parse_args()
     
     # 处理翻转模式
@@ -528,7 +555,11 @@ def main():
         flip_mode=flip_mode,
         conf_threshold=args.conf,
         save_output=args.save,
-        output_dir=args.output
+        output_dir=args.output,
+        jetson = args.jetson,
+        cam_width = args.cam_width,
+        cam_height = args.cam_height,
+        cam_fps = args.cam_fps
     )
     
     # 运行检测
