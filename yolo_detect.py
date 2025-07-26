@@ -350,6 +350,7 @@ class YOLODetector:
             # 设置摄像头分辨率
             cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.cam_width)
             cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.cam_height)
+            cap.set(cv2.CAP_PROP_FPS, self.cam_fps)
         else:
             pipeline = (
                 "nvarguscamerasrc ! "
@@ -447,7 +448,7 @@ class YOLODetector:
                     for codec in ['mp4v', 'XVID', 'MJPG']:
                         try:
                             fourcc = cv2.VideoWriter_fourcc(*codec)
-                            video_writer = cv2.VideoWriter(video_path, fourcc, 20.0, (frame_width, frame_height))
+                            video_writer = cv2.VideoWriter(video_path, fourcc, self.cam_fps, (frame_width, frame_height))
                             if video_writer.isOpened():
                                 is_recording = True
                                 recording_start_time = curr_time
