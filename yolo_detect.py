@@ -384,7 +384,6 @@ class YOLODetector:
                 break
             
             # 调整大小和翻转
-            # frame = self.resize_frame(frame)
             frame = self.flip_frame(frame)
             
             # 进行检测
@@ -434,10 +433,7 @@ class YOLODetector:
                 break
             elif key == ord('s') and self.save_output:
                 # 保存当前帧
-                if self.jetson:
-                    save_path = os.path.join(self.output_dir, f"cameraJETCAM_{hours:02d}h{minutes:02d}m{seconds:02d}s.jpg")
-                else:
-                    save_path = os.path.join(self.output_dir, f"cameraUSB_{hours:02d}h{minutes:02d}m{seconds:02d}s.jpg")
+                save_path = os.path.join(self.output_dir, f"camera_{hours:02d}h{minutes:02d}m{seconds:02d}s.jpg")
                 cv2.imwrite(save_path, output_frame)
                 print(f"帧已保存: {save_path}")
             elif key == ord('r') and self.save_output:
@@ -446,7 +442,10 @@ class YOLODetector:
                     # 开始录制
                     frame_height, frame_width = output_frame.shape[:2]
                     timestamp = f"{hours:02d}h{minutes:02d}m{seconds:02d}s"
-                    video_path = os.path.join(self.output_dir, f"camera_record_{timestamp}.mp4")
+                    if self.jetson:
+                        video_path = os.path.join(self.output_dir, f"cameraJETCAM_record_{timestamp}.mp4")
+                    else:
+                        video_path = os.path.join(self.output_dir, f"cameraUSB_record_{timestamp}.mp4")
                     
                     # 尝试创建视频写入器
                     # 获取摄像头实际帧率
@@ -484,7 +483,6 @@ class YOLODetector:
             video_writer.release()
             print("录制已结束并保存")
         
-        print(f"平均帧率：{cv2.getTickFrequency() / (curr_time - start_time)}")
         cv2.destroyAllWindows()
     
     def run(self):
@@ -495,6 +493,7 @@ class YOLODetector:
         print(f"输入类型: {input_type}")
         print(f"输出尺寸: {self.imgsz}")
         print(f"置信度阈值: {self.conf_threshold}")
+        print(f"画面像素: {self.cam_width}x{self.cam_height}")
         print("-" * 50)
         
         if input_type == 'image':
