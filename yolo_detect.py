@@ -40,6 +40,7 @@ class YOLODetector:
         # 加载模型
         try:
             self.model = YOLO(model_path, verbose=False)
+            self.model.overrides['verbose'] = False
             self.labels = self.model.names
             print(f"模型加载成功: {model_path}")
             print(f"检测类别: {list(self.labels.values())}")
@@ -383,7 +384,7 @@ class YOLODetector:
                 break
             
             # 调整大小和翻转
-            frame = self.resize_frame(frame)
+            # frame = self.resize_frame(frame)
             frame = self.flip_frame(frame)
             
             # 进行检测
@@ -449,15 +450,14 @@ class YOLODetector:
                     
                     # 尝试创建视频写入器
                     # 获取摄像头实际帧率
-                    actual_fps = cap.get(cv2.CAP_PROP_FPS)
                     for codec in ['mp4v', 'XVID', 'MJPG']:
                         try:
                             fourcc = cv2.VideoWriter_fourcc(*codec)
-                            video_writer = cv2.VideoWriter(video_path, fourcc, actual_fps, (frame_width, frame_height))
+                            video_writer = cv2.VideoWriter(video_path, fourcc, fps_display, (frame_width, frame_height))
                             if video_writer.isOpened():
                                 is_recording = True
                                 recording_start_time = curr_time
-                                print(f"开始录制到: {video_path} (fps={actual_fps})")
+                                print(f"开始录制到: {video_path} (fps={fps_display})")
                                 break
                             else:
                                 video_writer.release()
@@ -483,6 +483,8 @@ class YOLODetector:
         if video_writer and video_writer.isOpened():
             video_writer.release()
             print("录制已结束并保存")
+        
+        print(f"平均帧率：{cv2.getTickFrequency() / (curr_time - start_time)}")
         cv2.destroyAllWindows()
     
     def run(self):
