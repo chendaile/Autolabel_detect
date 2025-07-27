@@ -433,7 +433,10 @@ class YOLODetector:
                 break
             elif key == ord('s') and self.save_output:
                 # 保存当前帧
-                save_path = os.path.join(self.output_dir, f"camera_{hours:02d}h{minutes:02d}m{seconds:02d}s.jpg")
+                if self.jetson:
+                    save_path = os.path.join(self.output_dir, f"cameraJETCAM_{hours:02d}h{minutes:02d}m{seconds:02d}s.jpg")
+                else:
+                    save_path = os.path.join(self.output_dir, f"cameraUSB_{hours:02d}h{minutes:02d}m{seconds:02d}s.jpg")
                 cv2.imwrite(save_path, output_frame)
                 print(f"帧已保存: {save_path}")
             elif key == ord('r') and self.save_output:
@@ -445,14 +448,16 @@ class YOLODetector:
                     video_path = os.path.join(self.output_dir, f"camera_record_{timestamp}.mp4")
                     
                     # 尝试创建视频写入器
+                    # 获取摄像头实际帧率
+                    actual_fps = cap.get(cv2.CAP_PROP_FPS)
                     for codec in ['mp4v', 'XVID', 'MJPG']:
                         try:
                             fourcc = cv2.VideoWriter_fourcc(*codec)
-                            video_writer = cv2.VideoWriter(video_path, fourcc, self.cam_fps, (frame_width, frame_height))
+                            video_writer = cv2.VideoWriter(video_path, fourcc, actual_fps, (frame_width, frame_height))
                             if video_writer.isOpened():
                                 is_recording = True
                                 recording_start_time = curr_time
-                                print(f"开始录制到: {video_path}")
+                                print(f"开始录制到: {video_path} (fps={actual_fps})")
                                 break
                             else:
                                 video_writer.release()
@@ -534,13 +539,13 @@ def main():
                        help='使用Jetson CSI摄像头')
     
     parser.add_argument('--cam_width', '-W', type=int, default=1280,
-                       help='CSI摄像头宽度 (默认: 3264)')
+                       help='CSI摄像头宽度 (默认: 1280)')
     
     parser.add_argument('--cam_height', '-H', type=int, default=720,
-                       help='CSI摄像头高度 (默认: 2464)')
+                       help='CSI摄像头高度 (默认: 720)')
     
     parser.add_argument('--cam_fps', '-fps', type=int, default=30,
-                       help='CSI摄像头帧率 (默认: 21)')
+                       help='CSI摄像头帧率 (默认: 30)')
     
     args = parser.parse_args()
     
