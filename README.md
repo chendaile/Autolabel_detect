@@ -105,9 +105,6 @@ python train/train_val_split.py --datapath /path/to/your/dataset --train_pct 0.8
 5. **文件复制**：将选中的图片和对应标注文件复制到相应目录
 6. **结果输出**：显示划分结果统计信息
 
-**注意事项：**
-- 脚本会自动处理缺失标注файл的背景图片
-- 如果标注文件不存在，图片仍会被复制（作为背景图片）
 - 生成的目录结构完全符合YOLO训练要求
 
 ## 第二步：模型训练
@@ -135,18 +132,14 @@ python train/train_val_split.py --datapath /path/to/your/dataset --train_pct 0.8
 
 ```yaml
 # data.yaml 示例内容
-path: ./data                    # 数据集根目录
-train: train/images            # 训练图片路径（相对于path）
-val: validation/images         # 验证图片路径（相对于path）
+path: data          # 数据集根目录
+train: train\images         # 训练图片路径（相对于path）         
+val: validation\images          # 验证图片路径（相对于path）
 
-# 类别数量
-nc: 3
+nc: 4         # 类别数量
 
 # 类别名称
-names:
-  0: red_block
-  1: green_block  
-  2: blue_block
+names: ["blue block", "green block", "red block", "yellow block"]
 ```
 
 #### 训练命令
@@ -175,6 +168,7 @@ python train/train.py
 - `batch=0.9` 会自动根据GPU内存调整批次大小
 - `cache=True` 可以显著加速训练，但需要足够的内存
 - 训练过程中可以通过Ctrl+C安全停止
+- 更多设置可以在train.py脚本内调整
 
 ## 第三步：模型检测与推理
 
@@ -262,6 +256,7 @@ Jetson设备的CSI摄像头专用参数：
 **`--jetson`**
 - 启用Jetson Nano/Xavier等设备的CSI摄像头支持
 - 使用GStreamer管道进行视频采集
+- 默认不启动该选项，即默认使用USB摄像头
 
 **`--cam_width` / `--cam_height`**
 - 设置CSI摄像头的采集分辨率
@@ -395,58 +390,6 @@ output_directory/
 1. 避免同时处理多个大尺寸视频
 2. 定期清理输出目录
 3. 监控系统内存使用情况
-
-## 常见问题与解决方案
-
-### 数据准备阶段
-
-**Q: 数据划分脚本报错"Directory not found"？**
-A: 检查 `--datapath` 路径是否正确，确保路径下包含 `images` 和 `labels` 文件夹。
-
-**Q: 划分后的数据集文件数量不对？**
-A: 检查原始数据集中图片和标注文件是否一一对应，缺失标注的图片会被当作背景图片处理。
-
-### 训练阶段
-
-**Q: 训练时显示"No labels found"？**
-A: 检查 `data.yaml` 文件路径配置是否正确，确保训练数据目录包含图片和标注。
-
-**Q: GPU内存不足？**
-A: 将 `batch` 参数调小（如0.5或0.3），或减小输入图像尺寸。
-
-**Q: 训练精度不理想？**
-A: 检查数据集质量、增加训练轮数、调整学习率参数。
-
-### 检测阶段
-
-**Q: 摄像头打不开？**
-A: 
-1. 确认摄像头未被其他程序占用
-2. 尝试不同的摄像头ID（0, 1, 2）
-3. 检查摄像头驱动是否正常
-
-**Q: 检测结果太多误检？**
-A: 提高 `--conf` 参数值（如0.6或0.7），过滤低置信度检测。
-
-**Q: 检测不到目标？**
-A: 
-1. 降低 `--conf` 参数值（如0.2或0.1）
-2. 检查模型是否训练充分
-3. 确认测试图像与训练数据分布一致
-
-**Q: 视频保存失败？**
-A: 
-1. 检查输出目录是否有写入权限
-2. 确保系统已安装相应的视频编码器
-3. 尝试更改输出格式或编码方式
-
-**Q: Jetson平台摄像头问题？**
-A: 
-1. 确认CSI摄像头连接正确
-2. 检查GStreamer是否正确安装
-3. 调整摄像头分辨率和帧率参数
-
----
 
 <div align="center">
 
