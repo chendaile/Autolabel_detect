@@ -1,0 +1,25 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "blue bolck"
+    },
+    {
+      "id": 1,
+      "name": "green block"
+    },
+    {
+      "id": 2,
+      "name": "red blcok"
+    },
+    {
+      "id": 3,
+      "name": "yellow block"
+    }
+  ],
+  "info": {
+    "year": 2025,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}

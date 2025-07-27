@@ -20,7 +20,7 @@ ColorBlock_detect/
 ├── train/
 │   ├── train.py               # 训练脚本
 │   └── train_val_split.py     # 数据集划分工具
-├── results/
+├── train_results/
 │   └── detect_n/
 │       └── train/
 │           ├── weights/       # 训练权重目录
@@ -41,8 +41,8 @@ ColorBlock_detect/
 ├── test_result/              # 测试视频结果文件
 ├── test/
 │   └── test.mp4              # 测试视频文件
-└── premodel/
-    └── yolo11n.pt            # 预训练模型
+└── yolo11n.pt                # 预训练模型
+
 ```
 
 ## 第一步：数据准备与划分
