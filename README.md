@@ -174,7 +174,7 @@ python train/train.py
 
 ### 主检测脚本概述
 
-`yolo_detect.py` 是核心检测脚本，支持多种输入源和丰富的配置选项。脚本采用面向对象设计，主要包含 `YOLODetector` 类来处理所有检测任务。
+`yolo_detect.py` 是核心检测脚本，支持多种输入源和丰富的配置选项。脚本采用面向对象设计，主要包含 `YOLODetector` 类来处理所有检测任务, 输入`python yolo_detect.py -h`以帮助写入参数。
 
 ### 完整参数列表
 
