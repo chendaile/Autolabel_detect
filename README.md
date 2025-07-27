@@ -37,6 +37,8 @@ ColorBlock_detect/
 │   └── validation/
 │       ├── images/           # 验证图片
 │       └── labels/           # 验证标签
+|
+├── test_result/              # 测试视频结果文件
 ├── test/
 │   └── test.mp4              # 测试视频文件
 └── premodel/
