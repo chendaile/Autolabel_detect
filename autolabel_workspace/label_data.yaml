@@ -1,0 +1,11 @@
+path: label_data
+train: train\images
+val: validation\images
+
+nc: 1
+
+names: ["green bottom"]
+
+
+
+
