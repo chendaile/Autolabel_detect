@@ -17,6 +17,8 @@
 ```
 ColorBlock_detect/
 ├── yolo_detect.py              # 主检测脚本
+├── auto_label_workspace/       # 自动标注工具目录
+│   └── yolo_autolabel.py      # 自动标注脚本
 ├── train/
 │   ├── train.py               # 训练脚本
 │   └── train_val_split.py     # 数据集划分工具
@@ -37,12 +39,74 @@ ColorBlock_detect/
 │   └── validation/
 │       ├── images/           # 验证图片
 │       └── labels/           # 验证标签
-|
 ├── test_result/              # 测试视频结果文件
 ├── test/
 │   └── test.mp4              # 测试视频文件
+├── data.yaml                 # 数据集配置文件
 └── yolo11n.pt                # 预训练模型
 
+```
+## 第零步：使用已有模型进行自动标注（可选）
+
+在进行数据准备与划分之前，如果您已经有一个训练好的YOLO模型，可以使用自动标注工具快速为新的图片数据生成标注文件。这对于扩充数据集或标注相似场景的图片非常有用。
+
+### 自动标注工具概述
+
+`auto_label_workspace/yolo_autolabel.py` 是一个基于已训练YOLO模型的自动标注工具，能够批量处理图片文件夹，自动生成YOLO格式的标注文件。
+
+### 工具特性
+
+- **批量处理**：一次性处理整个文件夹的图片
+- **多格式支持**：支持 `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tiff`, `.tif` 格式
+- **可视化输出**：生成带有检测框的标注图片
+- **YOLO格式**：直接输出符合YOLO训练要求的标注文件
+- **自定义类别**：支持自定义类别名称
+
+### 参数说明
+
+| 参数 | 简写 | 类型 | 必需 | 说明 |
+|------|------|------|------|------|
+| `--model` | `-m` | str | 是 | 已训练的YOLO模型文件路径（.pt格式） |
+| `--input` | `-i` | str | 是 | 输入图片文件夹路径 |
+| `--output` | `-o` | str | 否 | 输出目录路径（默认：./output） |
+| `--classes` | `-c` | list | 否 | 自定义类别名称列表 |
+
+### 使用示例
+
+#### 基础用法
+
+```bash
+# 基本自动标注
+python auto_label_workspace/yolo_autolabel.py --model best.pt --input ./new_images
+
+# 指定输出目录
+python auto_label_workspace/yolo_autolabel.py --model best.pt --input ./new_images --output ./auto_labeled_data
+
+# 使用完整路径
+python auto_label_workspace/yolo_autolabel.py \
+  --model train_results/detect_n/train/weights/best.pt \
+  --input /path/to/your/images \
+  --output ./labeled_results
+```
+
+#### 自定义类别名称
+
+```bash
+# 自定义类别标签
+python auto_label_workspace/yolo_autolabel.py \
+  --model best.pt \
+  --input ./new_images \
+  --classes "蓝色方块" "绿色方块" "红色方块" "黄色方块"
+```
+
+#### 处理流程示例
+
+```bash
+# 1. 使用已有模型对新图片进行自动标注
+python auto_label_workspace/yolo_autolabel.py \
+  --model train_results/detect_n/train/weights/best.pt \
+  --input ./raw_images \
+  --output ./auto_labeled
 ```
 
 ## 第一步：数据准备与划分
