@@ -1,10 +1,11 @@
-# ColorBlock Detect
+# Autolabel_detect
+
 
 <div align="center">
 
 ![Python](https://img.shields.io/badge/python-3.7%2B-blue) ![PyTorch](https://img.shields.io/badge/PyTorch-supported-red) ![OpenCV](https://img.shields.io/badge/OpenCV-required-green) ![Ultralytics](https://img.shields.io/badge/Ultralytics-YOLO-yellow)
 
-**基于运行在Jetson Xavier Nx上YOLO的不同颜色的正方体目标检测系统**
+**基于运行在Jetson Xavier Nx上YOLO的自动标注以及目标检测系统**
 
 支持图片、视频、实时摄像头检测
 
