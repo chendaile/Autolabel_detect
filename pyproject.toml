@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=62", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autolabel-detect"
+version = "0.1.0"
+description = "Toolkit for training, auto-labelling and running YOLO vision models"
+authors = [{name = "Autolabel Detect Contributors"}]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "opencv-python",
+    "numpy",
+    "ultralytics",
+]
+
+[project.scripts]
+autolabel-detect = "autolabel_detect.cli:main"
