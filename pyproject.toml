@@ -1,0 +1,21 @@
+[project]
+name = "autolabel-detect"
+version = "0.1.0"
+description = "Toolkit for training YOLO models and generating automatic labels."
+readme = "README.md"
+authors = [{name = "Autolabel Detect"}]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+full = ["ultralytics", "opencv-python"]
+
+[project.scripts]
+autolabel-detect = "autolabel_detect.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.setuptools.packages.find]
+include = ["autolabel_detect"]
