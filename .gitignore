@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+
+# Training artifacts
+train_results/**/weights/*.engine
+train_results/**/weights/*.onnx
