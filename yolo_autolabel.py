@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 import cv2
 import argparse
@@ -172,3 +173,23 @@ def main():
 
 if __name__ == "__main__":
     main()
+=======
+"""Backwards compatible wrapper around :mod:`autolabel_toolkit.cli`."""
+
+from __future__ import annotations
+
+import sys
+
+from autolabel_toolkit.cli import main as _cli_main
+
+
+def main() -> None:
+    """Entry point mirroring the historical CLI behaviour."""
+
+    argv = ["label", *sys.argv[1:]]
+    _cli_main(argv)
+
+
+if __name__ == "__main__":  # pragma: no cover - CLI entry point
+    main()
+>>>>>>> d333dfb9d38f1a94864cd1c882b488d4d4d0b11e
