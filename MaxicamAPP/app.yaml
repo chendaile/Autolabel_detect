@@ -1,0 +1,10 @@
+files:
+  - main.py
+  - yolov8n_face.cvimodel
+  - yolov8n_face.mud
+id: face_detect
+name: face_detect
+version: 1.0.1
+author: cdl
+icon: app.png
+desc: detect face
